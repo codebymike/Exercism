@@ -1,27 +1,83 @@
 module TwelveDays exposing (recite)
 
-import List exposing (drop, take)
+import List exposing (range, map, reverse, take)
+import Array exposing (Array, fromList, get)
+import String exposing (join)
 
 
-christmasPoem : List String
-christmasPoem =
-    [ "On the first day of Christmas my true love gave to me, a Partridge in a Pear Tree."
-    , "On the second day of Christmas my true love gave to me, two Turtle Doves, and a Partridge in a Pear Tree."
-    , "On the third day of Christmas my true love gave to me, three French Hens, two Turtle Doves, and a Partridge in a Pear Tree."
-    , "On the fourth day of Christmas my true love gave to me, four Calling Birds, three French Hens, two Turtle Doves, and a Partridge in a Pear Tree."
-    , "On the fifth day of Christmas my true love gave to me, five Gold Rings, four Calling Birds, three French Hens, two Turtle Doves, and a Partridge in a Pear Tree."
-    , "On the sixth day of Christmas my true love gave to me, six Geese-a-Laying, five Gold Rings, four Calling Birds, three French Hens, two Turtle Doves, and a Partridge in a Pear Tree."
-    , "On the seventh day of Christmas my true love gave to me, seven Swans-a-Swimming, six Geese-a-Laying, five Gold Rings, four Calling Birds, three French Hens, two Turtle Doves, and a Partridge in a Pear Tree."
-    , "On the eighth day of Christmas my true love gave to me, eight Maids-a-Milking, seven Swans-a-Swimming, six Geese-a-Laying, five Gold Rings, four Calling Birds, three French Hens, two Turtle Doves, and a Partridge in a Pear Tree."
-    , "On the ninth day of Christmas my true love gave to me, nine Ladies Dancing, eight Maids-a-Milking, seven Swans-a-Swimming, six Geese-a-Laying, five Gold Rings, four Calling Birds, three French Hens, two Turtle Doves, and a Partridge in a Pear Tree."
-    , "On the tenth day of Christmas my true love gave to me, ten Lords-a-Leaping, nine Ladies Dancing, eight Maids-a-Milking, seven Swans-a-Swimming, six Geese-a-Laying, five Gold Rings, four Calling Birds, three French Hens, two Turtle Doves, and a Partridge in a Pear Tree."
-    , "On the eleventh day of Christmas my true love gave to me, eleven Pipers Piping, ten Lords-a-Leaping, nine Ladies Dancing, eight Maids-a-Milking, seven Swans-a-Swimming, six Geese-a-Laying, five Gold Rings, four Calling Birds, three French Hens, two Turtle Doves, and a Partridge in a Pear Tree."
-    , "On the twelfth day of Christmas my true love gave to me, twelve Drummers Drumming, eleven Pipers Piping, ten Lords-a-Leaping, nine Ladies Dancing, eight Maids-a-Milking, seven Swans-a-Swimming, six Geese-a-Laying, five Gold Rings, four Calling Birds, three French Hens, two Turtle Doves, and a Partridge in a Pear Tree."
+type alias Poem =
+    List String
+
+
+recite : Int -> Int -> Poem
+recite start stop =
+    map poemLines (range start stop)
+
+
+poemLines : Int -> String
+poemLines day =
+    "On the "
+        ++ getOrdinal day
+        ++ " day of Christmas my true love gave to me, "
+        ++ getGiftsList day
+        ++ "."
+
+
+getGiftsList : Int -> String
+getGiftsList numberOf =
+    take numberOf gifts
+        |> constructPoemLine
+
+
+constructPoemLine : List String -> String
+constructPoemLine lines =
+    case lines of
+        [] ->
+            ""
+
+        [ head ] ->
+            head
+
+        head :: tail ->
+            join ", " (reverse tail) ++ ", and " ++ head
+
+
+gifts : List String
+gifts =
+    [ "a Partridge in a Pear Tree"
+    , "two Turtle Doves"
+    , "three French Hens"
+    , "four Calling Birds"
+    , "five Gold Rings"
+    , "six Geese-a-Laying"
+    , "seven Swans-a-Swimming"
+    , "eight Maids-a-Milking"
+    , "nine Ladies Dancing"
+    , "ten Lords-a-Leaping"
+    , "eleven Pipers Piping"
+    , "twelve Drummers Drumming"
     ]
 
 
-recite : Int -> Int -> List String
-recite start stop =
-    christmasPoem
-        |> drop (start - 1)
-        |> take (stop - start + 1)
+getOrdinal : Int -> String
+getOrdinal day =
+    Maybe.withDefault "" (get day ordinals)
+
+
+ordinals : Array String
+ordinals =
+    Array.fromList
+        [ "zeroth"
+        , "first"
+        , "second"
+        , "third"
+        , "fourth"
+        , "fifth"
+        , "sixth"
+        , "seventh"
+        , "eighth"
+        , "ninth"
+        , "tenth"
+        , "eleventh"
+        , "twelfth"
+        ]

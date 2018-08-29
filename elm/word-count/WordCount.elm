@@ -1,18 +1,19 @@
 module WordCount exposing (wordCount)
 
-import Dict exposing (Dict)
-import String exposing (split)
-import Regex exposing (..)
+import Dict exposing (Dict, update, empty)
+import String exposing (split, toLower)
+import Regex exposing (regex, replace)
+import List exposing (map, filter, foldr)
 
 
 wordCount : String -> Dict String Int
 wordCount sentence =
     sentence
-        |> String.split " "
+        |> split " "
         |> sanitize
-        |> List.foldr
+        |> foldr
             (\word dict ->
-                Dict.update word
+                update word
                     (\count ->
                         case count of
                             Just count ->
@@ -23,12 +24,12 @@ wordCount sentence =
                     )
                     dict
             )
-            Dict.empty
+            empty
 
 
 sanitize : List String -> List String
 sanitize words =
     words
-        |> List.map String.toLower
-        |> List.map (\word -> Regex.replace Regex.All (Regex.regex "\\W") (\_ -> "") word)
-        |> List.filter (\x -> x /= "")
+        |> map toLower
+        |> map (\word -> replace Regex.All (regex "\\W") (\_ -> "") word)
+        |> filter (\x -> x /= "")

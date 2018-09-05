@@ -1,18 +1,16 @@
 module Pangram exposing (isPangram)
 
 import String exposing (filter, toLower, toList)
-import Regex exposing (regex, contains)
-import Set exposing (fromList, toList)
-import List exposing (length)
+import Char exposing (isLower)
+import Set exposing (fromList, size)
 
 
 isPangram : String -> Bool
 isPangram sentence =
     sentence
         |> toLower
-        |> filter (\x -> contains (regex "[a-z]") (toString x))
+        |> filter isLower
         |> String.toList
         |> Set.fromList
-        |> Set.toList
-        |> length
+        |> size
         |> (==) 26
